@@ -11,7 +11,7 @@ class Coupon < ActiveRecord::Base
   def send_retention
     Message.send_retention_to(self)
   end
-  
+
   def self.send_retention_message
     offset_start = 3626
     finish = not_used.count
@@ -48,4 +48,20 @@ class Coupon < ActiveRecord::Base
     self.save
   end
 
+  def self.average_day
+    average_sum = []
+    Coupon.all.each do |c|
+      a = c.created_at
+      b = c.used_at
+      unless (b == nil)
+        result = b - a
+        average_sum << result
+      end
+    end  
+  t = average_sum.sum / average_sum.size.to_f
+  mm, ss = t.divmod(60)            #=> [4515, 21]
+  hh, mm = mm.divmod(60)           #=> [75, 15]
+  dd, hh = hh.divmod(24)           #=> [3, 3]
+  puts "%d days, %d hours, %d minutes and %d seconds" % [dd, hh, mm, ss]
+  end
 end
